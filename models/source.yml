@@ -1,0 +1,7 @@
+sources:
+  - name: raw        
+    tables:
+      - name: emp
+        description: employee details
+      - name: dept
+        description: department details
