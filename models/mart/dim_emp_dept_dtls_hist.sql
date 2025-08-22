@@ -1,4 +1,4 @@
-{% set condition = build_condition_column_compare("s", "t", ref('stg_dim_emp_dept_dtls')) %}
+{% set condition = build_condition_column_compare("s", "t", ref('stg_dim_emp_dept_dtls'),['EMP_ID','SYSTEM_SOURCE','DATA_SOURCE']) %}
 
 {{
     config(
