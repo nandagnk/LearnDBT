@@ -1,15 +1,13 @@
-{% macro build_condition_column_compare(source_alias, target_alias, model_name) %}
+{% macro build_condition_column_compare(source_alias, target_alias, model_name, exclude_key_columns) %}
     {# model_name should be passed like ref('your_model') #}
 
     {% set relation = model_name %}
     {% set columns = adapter.get_columns_in_relation(relation) %}
 
-    {# Exclude key columns #}
-    {% set key_cols = ['emp_id', 'system_source', 'data_source'] %}
     {% set compare_cols = [] %}
 
     {% for col in columns %}
-        {% if col.name | lower not in key_cols %}
+        {% if col.name | lower not in exclude_key_columns %}
             {% do compare_cols.append(col.name) %}
         {% endif %}
     {% endfor %}
