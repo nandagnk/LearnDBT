@@ -2,30 +2,7 @@
     config(
         materialized='incremental',               
         transient=false,
-        post_hook=[            
-            "
-            update {{ this }} t
-            set is_latest_yn = 'N',
-                dw_valid_to = current_timestamp() - interval '1 minute'
-            where is_latest_yn = 'Y'
-              and exists (
-                  select 1
-                  from {{ this }} x
-                  where x.emp_id = t.emp_id
-                  and x.is_latest_yn = t.is_latest_yn
-                  and x.updated_dt > t.updated_dt                  
-              )
-            ",            
-            "
-            update {{ this }} t
-            set is_latest_yn = 'N',
-                dw_valid_to = current_timestamp() - interval '1 minute',
-                is_deleted = 'Y'
-            where is_latest_yn = 'Y'
-              and not exists (
-                  select 1 from {{ ref('src_emp') }} e where e.emp_id = t.emp_id
-              )"
-        ]
+        post_hook=[ handle_scd2_update() , handle_scd2_delete(ref('src_emp')) ]
     )
 }}
 with int_emp_dept as (
