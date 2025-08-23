@@ -1,12 +1,39 @@
-{% set condition = build_condition_column_compare("s", "t", ref('stg_dim_emp_dept_dtls'),['EMP_ID','SYSTEM_SOURCE','DATA_SOURCE']) %}
+/*--"unique_key_columns" is to configure the primary/unique key to identify the rows*/
+{% set unique_key_columns = ['EMP_ID','SYSTEM_SOURCE','DATA_SOURCE'] %}
+
+/*
+---"compare_column_list" is to configure the columns to be compared between the source and target 
+---to determine the updated rows(when there is a difference). This is optional and when no values 
+---passed macro will derive the common columns between the source and target.
+*/
+
+{% set compare_column_list = [] %}
+
+/*
+---"exclude_column_list" is to configure the columns can be ignored in the comparison
+---it is good to exclude the unique_key_columns in the exclude column list since these columns won't 
+---vary between source and target.
+*/
+
+{% set exclude_column_list = ['EMP_ID','SYSTEM_SOURCE','DATA_SOURCE'] %}
+
+
+/*
+---configure the dynamic data comparison string to check any data is changed between stg and dim
+---This is required to indentify the updated records for incremental load
+---Note:- make sure to pass values for either "compare_column_list" or "exclude_column_list"
+*/
+
+{% set condition = build_condition_column_compare(source_alias="s", target_alias="t", src_model_name=ref('stg_dim_arrears_gnk'), tgt_model_name =  this ,  compare_columns=compare_column_list, exclude_columns=exclude_column_list) %}
 
 {{
     config(
         materialized='incremental',               
         transient=false,
-        post_hook=[ "{{ handle_history_updates(['EMP_ID','SYSTEM_SOURCE','DATA_SOURCE']) }}",
-                    "{{ handle_soft_deletes(ref('stg_dim_emp_dept_dtls'),['EMP_ID','SYSTEM_SOURCE','DATA_SOURCE']) }}"
-        ]     
+        post_hook=[ 
+            update_history_records(unique_key_columns),
+            apply_soft_deletes(ref('stg_dim_emp_dept_dtls'), unique_key_columns)            
+        ]
     )
 }}
 with stg_dim_emp_dept_dtls as (
