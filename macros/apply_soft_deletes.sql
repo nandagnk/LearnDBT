@@ -1,4 +1,4 @@
-{% macro apply_soft_deletes(src_model, unique_key_columns) %}
+{% macro apply_soft_deletes(src_model, sys_source, unique_key_columns) %}
     {% set src_relation = ref(src_model) %}
     {% set conditions %}
         {% for col in unique_key_columns %}
@@ -14,6 +14,7 @@
             dw_deleted_flag = 'Y'
         where is_latest_yn = 'Y'
           and dw_deleted_flag is null
+          and system_source = '{{ sys_source }}'
           and not exists (
               select 1
               from {{ src_model }} s

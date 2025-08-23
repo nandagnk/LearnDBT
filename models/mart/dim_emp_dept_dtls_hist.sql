@@ -2,6 +2,7 @@
 {% set compare_column_list = [] %}
 {% set exclude_column_list = ['EMP_ID','SYSTEM_SOURCE'] %}
 {% set src_model = 'stg_emp_dept_dtls' %}
+{% set sys_source = 'AUS_E' %}
 {% set tgt_model = this %}
 {% set condition = build_condition_column_compare(
     source_alias="s",
@@ -17,7 +18,7 @@
     transient=false,
     post_hook=[
         update_history_records(unique_key_columns),
-        apply_soft_deletes(src_model, unique_key_columns)
+        apply_soft_deletes(src_model, sys_source, unique_key_columns)
     ]
 ) }}
 
