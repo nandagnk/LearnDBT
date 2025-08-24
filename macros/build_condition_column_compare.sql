@@ -1,20 +1,43 @@
-{% macro build_condition_column_compare(source_alias, target_alias, model_name, exclude_key_columns) %}
-    {# model_name should be passed like ref('your_model') #}
+{% macro build_condition_column_compare(
+    source_alias,
+    target_alias,
+    src_model_name,
+    tgt_model_name,
+    compare_columns=none,
+    exclude_columns=none
+) -%}
 
-    {% set relation = model_name %}
-    {% set columns = adapter.get_columns_in_relation(relation) %}
+    {%- if exclude_columns is not none and exclude_columns | length > 0 -%}
+        {% set exclude_upper = exclude_columns | map("upper") | list -%}
+    {%- endif -%}
 
-    {% set compare_cols = [] %}
+    {%- if compare_columns is not none and compare_columns | length > 0 -%}
+        {% set compare_cols = compare_columns | map("upper") | list -%}
+    {%- else -%}
+        {% set src_columns = adapter.get_columns_in_relation(src_model_name) -%}
+        {% set tgt_columns = adapter.get_columns_in_relation(tgt_model_name) -%}
 
-    {% for col in columns %}
-        {% if col.name | lower not in exclude_key_columns %}
-            {% do compare_cols.append(col.name) %}
-        {% endif %}
-    {% endfor %}
+        {% set common_columns = [] -%}
+        {%- for col in src_columns -%}
+            {%- for tgt_col in tgt_columns -%}
+                {%- if col.name | upper == tgt_col.name | upper -%}
+                    {% do common_columns.append(col.name) -%}
+                {%- endif -%}
+            {%- endfor -%}
+        {%- endfor -%}
 
-    {# Render the change condition #}
-    {% for col in compare_cols %}
+        {% set compare_cols = [] -%}
+        {%- for col in common_columns -%}
+            {%- if col | upper not in exclude_upper -%}
+                {% do compare_cols.append(col) -%}
+            {%- endif -%}
+        {%- endfor -%}
+    {%- endif -%}
+
+    {# Render final condition without extra newlines #}
+    {%- for col in compare_cols %}
         {{ source_alias }}.{{ col }} <> {{ target_alias }}.{{ col }}
         {% if not loop.last %} or {% endif %}
-    {% endfor %}
-{% endmacro %}
+    {%- endfor -%}
+
+{%- endmacro %}
