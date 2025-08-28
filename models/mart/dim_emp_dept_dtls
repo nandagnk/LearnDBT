@@ -1,3 +1,4 @@
+--Note: this file was renamed to fix the json error
 {{
     config(
         materialized='incremental',               
