@@ -1,13 +1,13 @@
 {% set unique_key_columns = ['EMP_ID','SYSTEM_SOURCE'] %}
 {% set compare_column_list = [] %}
 {% set exclude_column_list = ['EMP_ID','SYSTEM_SOURCE'] %}
-{% set src_model = 'stg_emp_dept_dtls' %}
+{% set src_model = 'stg_dim_emp_dept_dtls' %}
 {% set sys_source = 'AUS_E' %}
 {% set tgt_model = this %}
 {% set condition = build_condition_column_compare(
     source_alias="s",
     target_alias="t",
-    src_model_name=ref('stg_emp_dept_dtls'),
+    src_model_name=ref('stg_dim_emp_dept_dtls'),
     tgt_model_name=this,
     compare_columns=compare_column_list,
     exclude_columns=exclude_column_list
