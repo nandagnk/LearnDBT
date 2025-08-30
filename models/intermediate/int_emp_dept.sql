@@ -19,7 +19,10 @@ src_dept as (
         d.department_name,
         d.location,
         e.emp_created_dt as created_dt,
-        e.emp_updated_dt as updated_dt
+        greatest(to_timestamp(e.emp_updated_dt,'DD-MON-YYYY HH24:MI:SS.FF3') , to_timestamp(d.dept_updated_dt,'DD-MON-YYYY HH24:MI:SS.FF3')) as updated_dt
     from src_emp e
     join src_dept d
         on e.deptno = d.deptno
+
+
+
