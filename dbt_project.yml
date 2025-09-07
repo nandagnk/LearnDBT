@@ -40,3 +40,12 @@ models:
     # Applies to all files under models/example/
     example:
       +materialized: table
+      transient: false
+    dim:
+      schema: edw
+      +materialized: table
+      transient: false
+    facts:
+      schema: edw
+      +materialized: table
+      transient: false

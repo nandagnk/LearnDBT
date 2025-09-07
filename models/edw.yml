@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: dim_listings_with_hosts
+    description: 'DIM listings with hosts'    
+    columns:
+      - name: listing_id
+        data_tests:
+          - unique
+          - not_null
+      - name: host_id
+        data_tests:
+          - not_null
+          - relationships:
+              field: host_id
+              to: ref('src_hosts')
+
+  - name: fact_reviews
+    description: 'Fact reviews table'    
+    columns:
+      - name: listing_id
+        data_tests:          
+          - not_null
+          - relationships:
+              field: listing_id
+              to: ref('src_listings')

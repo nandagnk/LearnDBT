@@ -1,7 +1,13 @@
 sources:
-  - name: raw        
+  - name: raw
     tables:
       - name: emp
-        description: employee details
+        description: "Employee details from the source system"
       - name: dept
-        description: department details
+        description: "Department details from the source system"
+      - name: raw_listings
+        description: "Raw listing data from source system"
+      - name: raw_hosts
+        description: "Raw hosts data from source system"
+      - name: raw_reviews
+        description: "Raw reviews data from source system"
