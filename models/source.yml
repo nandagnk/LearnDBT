@@ -1,10 +1,33 @@
 sources:
   - name: raw
     tables:
-      - name: emp
-        description: "Employee details from the source system"
       - name: dept
         description: "Department details from the source system"
+        columns:
+          - name: deptno
+            description: "Primary key of dept table"
+            tests:
+              - not_null
+              - unique
+          - name: dname
+            description: "Department Name"
+            tests:
+              - not_null
+      - name: emp
+        description: "Employee details from the source system"
+        columns:
+          - name: empno
+            description: "Primary key of dept table"
+            tests:
+              - not_null
+              - unique
+          - name: deptno
+            description: "Department Number"
+            tests:
+              - relationships:
+                  to: source('raw', 'dept')
+                  field: deptno          
+
       - name: raw_listings
         description: "Raw listing data from source system"
       - name: raw_hosts
