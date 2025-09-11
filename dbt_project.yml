@@ -49,3 +49,11 @@ models:
       schema: edw
       +materialized: table
       transient: false
+    finance:
+      schema: edw
+      +materialized: table
+      transient: false
+    marketing:
+      schema: edw
+      +materialized: table
+      transient: false
