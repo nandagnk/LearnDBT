@@ -1,0 +1,52 @@
+version: 2
+
+sources:
+  - name: jaffle_shop
+    database: airbnb  
+    schema: jaffle_shop  
+    tables:
+      - name: customers
+        description: 'raw customers data the from upstream system'
+        columns:
+          - name: id
+            data_tests:
+              - unique
+              - not_null      
+
+      - name: orders
+        description: 'raw orders data from the upstream system'
+        columns:
+          - name: id
+            data_tests:
+              - unique
+              - not_null
+          - name: user_id
+            data_tests:
+              - relationships:
+                  field: id
+                  to: source('_src_jaffle_shop', 'customers')
+        config:
+          freshness:
+            warn_after:
+              count: 12
+              period: hour
+            error_after:
+              count: 1
+              period: day
+          loaded_at_field: _etl_loaded_at
+
+
+  - name: stripe
+    database: airbnb  
+    schema: stripe    
+    tables:
+      - name: payment
+        config:
+          freshness:
+            warn_after:
+              count: 12
+              period: hour
+            error_after:
+              count: 1
+              period: day
+          loaded_at_field: _batched_at
